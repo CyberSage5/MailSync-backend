@@ -1,0 +1,49 @@
+# Node.js dependencies
+/node_modules/
+
+# Logs
+*.log
+logs/
+
+# Environment variables
+.env
+
+# Authentication session files
+/sessions/
+
+# Build files
+/dist/
+/build/
+
+# Dependency directory for frontend (if using frontend in the project)
+frontend/node_modules/
+
+# IDE/editor configurations
+.vscode/
+.idea/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Coverage reports
+/coverage/
+
+# npm package-lock and yarn.lock (if you want to ignore)
+package-lock.json
+yarn.lock
+
+# Binaries or compiled files
+*.out
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Temporary files
+*.swp
+*.swo
+
+# Other common exclusions
+*.bak
+*.tmp
