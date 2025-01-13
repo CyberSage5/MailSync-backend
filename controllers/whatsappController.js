@@ -1,5 +1,18 @@
 const { linkWhatsApp, sendWhatsAppNotification } = require('../services/whatsappService');
+const { sendWhatsAppMessage } = require('../services/whatsappService');
 const User = require('../models/User');
+const { generateQRCode } = require('../services/whatsappService');
+
+// Function to generate WhatsApp QR code
+exports.linkWhatsApp = async (req, res) => {
+  try {
+    const qrCode = await generateQRCode();  // Function that handles QR code generation
+    return res.status(200).json({ message: 'QR code generated', qrCode: qrCode });
+  } catch (error) {
+    console.error('Error generating WhatsApp QR code:', error);
+    return res.status(500).json({ message: 'Failed to generate QR code', error: error.message });
+  }
+};
 
 // Link WhatsApp Account to User
 exports.linkWhatsApp = async (req, res) => {
@@ -53,5 +66,20 @@ exports.sendWhatsAppNotification = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error while sending WhatsApp notification" });
+  }
+};
+exports.sendWhatsAppMessage = async (req, res) => {
+  try {
+    const { phoneNumber, message } = req.body;
+    if (!phoneNumber || !message) {
+      return res.status(400).json({ message: 'Phone number and message are required' });
+    }
+
+    // Call service to send WhatsApp message
+    const response = await sendWhatsAppMessage(phoneNumber, message);
+    return res.status(200).json({ message: 'Message sent successfully', data: response });
+  } catch (error) {
+    console.error('Error sending WhatsApp message:', error);
+    return res.status(500).json({ message: 'Failed to send message', error: error.message });
   }
 };

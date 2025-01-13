@@ -10,13 +10,16 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@adiwajshing/baileys": "^5.0.0",
     "@whiskeysockets/baileys": "^6.7.9",
+    "baileys": "^6.7.9",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.9.4"
+    "mongoose": "^8.9.4",
+    "qrcode": "^1.5.4"
   },
   "devDependencies": {
     "eslint": "^9.18.0",
