@@ -7,6 +7,8 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   isVerified: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
+  verificationToken: { type: String }, // Add this field for the verification token
+  verificationTokenExpires: { type: Date }, // Add this field for the token expiration time
   whatsappSession: {
     phoneNumber: { type: String }, // This can be extended to hold more session data
   },
