@@ -31,28 +31,26 @@ exports.signup = async (req, res) => {
             verificationTokenExpires,
         });
 
-        // Save the user and log the token & expiration for debugging
+        // Save the user
         await newUser.save();
-        console.log('Token:', verificationToken);
-        console.log('Expires at:', new Date(verificationTokenExpires).toLocaleString());
 
         // Send verification email
         const verificationLink = `${process.env.BASE_URL}/api/auth/verify-email/${verificationToken}`;
-        
-        // Set up the email transporter (using Gmail as an example)
+
+        // Set up the email transporter
         const transporter = nodemailer.createTransport({
-            service: 'Gmail',  // or 'smtp.mailtrap.io' for testing purposes
+            service: 'Gmail', 
             auth: {
-                user: process.env.EMAIL_USER, // email user (from .env)
-                pass: process.env.EMAIL_PASS, // email password (from .env)
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS,
             },
         });
 
         // Email options
         const mailOptions = {
-            from: process.env.EMAIL_USER,  // sender email (from .env)
-            to: email,                     // recipient email (user's email)
-            subject: 'Verify Your Email',  // email subject
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: 'Verify Your Email',
             html: `<p>Hi ${name},</p>
                    <p>Thank you for signing up. Please click the link below to verify your email:</p>
                    <a href="${verificationLink}">Verify Email</a>
@@ -67,7 +65,7 @@ exports.signup = async (req, res) => {
             message: 'Signup successful. Please check your email to verify your account.',
         });
     } catch (error) {
-        console.error(error);  // Log error for easier debugging
+        console.error('Error during signup:', error.message);
         res.status(500).json({ message: 'Internal Server Error', error });
     }
 };
@@ -76,7 +74,6 @@ exports.signup = async (req, res) => {
 exports.verifyEmail = async (req, res) => {
     try {
         const { token } = req.params;
-        console.log('Token received for verification:', token);
 
         // Find the user with the token
         const user = await User.findOne({
@@ -90,13 +87,13 @@ exports.verifyEmail = async (req, res) => {
 
         // Verify the user
         user.isVerified = true;
-        user.verificationToken = undefined; // Clean up the token after successful verification
-        user.verificationTokenExpires = undefined; // Clean up the expiration time
+        user.verificationToken = undefined;
+        user.verificationTokenExpires = undefined;
         await user.save();
 
         res.status(200).json({ message: 'Email verified successfully!' });
     } catch (error) {
-        console.error(error);  // Log error for easier debugging
+        console.error('Error during email verification:', error.message);
         res.status(500).json({ message: 'Internal Server Error', error });
     }
 };
@@ -127,7 +124,7 @@ exports.loginUser = async (req, res) => {
 
         res.json({ message: 'Login successful.', token, user });
     } catch (error) {
-        console.error(error);  // Log error for easier debugging
+        console.error('Error during login:', error.message);
         res.status(500).json({ message: 'Internal Server Error', error });
     }
 };
