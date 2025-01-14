@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: my-app
+    env: node
+    build:
+      command: yarn
+    port: 5000
