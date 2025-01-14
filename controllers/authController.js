@@ -31,7 +31,7 @@ exports.signup = async (req, res) => {
             verificationTokenExpires,
         });
 
-        // Save the user
+        // Save the user to the database
         await newUser.save();
 
         // Send verification email
@@ -39,7 +39,7 @@ exports.signup = async (req, res) => {
 
         // Set up the email transporter
         const transporter = nodemailer.createTransport({
-            service: 'Gmail', 
+            service: 'Gmail',
             auth: {
                 user: process.env.EMAIL_USER,
                 pass: process.env.EMAIL_PASS,
@@ -65,7 +65,6 @@ exports.signup = async (req, res) => {
             message: 'Signup successful. Please check your email to verify your account.',
         });
     } catch (error) {
-        console.error('Error during signup:', error.message);
         res.status(500).json({ message: 'Internal Server Error', error });
     }
 };
@@ -75,7 +74,7 @@ exports.verifyEmail = async (req, res) => {
     try {
         const { token } = req.params;
 
-        // Find the user with the token
+        // Find the user with the token and ensure it has not expired
         const user = await User.findOne({
             verificationToken: token,
             verificationTokenExpires: { $gt: Date.now() },
@@ -93,7 +92,6 @@ exports.verifyEmail = async (req, res) => {
 
         res.status(200).json({ message: 'Email verified successfully!' });
     } catch (error) {
-        console.error('Error during email verification:', error.message);
         res.status(500).json({ message: 'Internal Server Error', error });
     }
 };
@@ -109,11 +107,12 @@ exports.loginUser = async (req, res) => {
             return res.status(404).json({ message: 'User not found.' });
         }
 
+        // Ensure user is verified before allowing login
         if (!user.isVerified) {
             return res.status(401).json({ message: 'Please verify your email before logging in.' });
         }
 
-        // Compare passwords
+        // Compare password with the stored hashed password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(400).json({ message: 'Invalid credentials.' });
@@ -122,9 +121,9 @@ exports.loginUser = async (req, res) => {
         // Generate JWT
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
+        // Respond with login success and token
         res.json({ message: 'Login successful.', token, user });
     } catch (error) {
-        console.error('Error during login:', error.message);
         res.status(500).json({ message: 'Internal Server Error', error });
     }
 };
