@@ -1,26 +1,39 @@
 require('dotenv').config(); // Load environment variables
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors'); // Add CORS middleware for security
+const helmet = require('helmet'); // Add Helmet for enhanced security
+const morgan = require('morgan'); // Add Morgan for logging HTTP requests
 
 const app = express();
 
-// Middleware to parse JSON
-app.use(express.json());
+// Middleware
+app.use(express.json()); // Parse JSON bodies
+app.use(cors()); // Enable CORS
+app.use(helmet()); // Set HTTP headers for security
+app.use(morgan('dev')); // Log HTTP requests (dev environment)
 
-// Routes
+// Import Routes
 const authRoutes = require('./routes/authRoutes');
-const whatsappRoutes = require('./routes/whatsappRoutes');
 
-// Use routes
-app.use('/api/auth', authRoutes); // Auth routes
-app.use('/api/whatsapp', whatsappRoutes); // WhatsApp routes
+// Use Routes
+app.use('/api/auth', authRoutes);
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connected to MongoDB'))
-  .catch((err) => console.error('MongoDB connection error:', err));
+  .catch((err) => {
+    console.error('MongoDB connection error:', err);
+    process.exit(1); // Exit the process if unable to connect to MongoDB
+  });
 
-// Server setup
+// Global Error Handler (Optional)
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: 'An unexpected error occurred.' });
+});
+
+// Server Setup
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
