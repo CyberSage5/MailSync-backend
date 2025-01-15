@@ -1,6 +1,4 @@
-// services/whatsappService.js
 const axios = require('axios');
-const logger = require('../utils/logger');  // Logging utility
 
 const sendWhatsAppMessage = async (phoneNumber, message) => {
     try {
@@ -17,12 +15,9 @@ const sendWhatsAppMessage = async (phoneNumber, message) => {
         };
 
         const response = await axios.post(url, data, { headers });
-
-        logger.info(`Message sent to ${phoneNumber}: ${response.data}`);
-        return response.data;
+        console.log('Message sent successfully:', response.data);
     } catch (error) {
-        logger.error(`Error sending WhatsApp message to ${phoneNumber}: ${error.response?.data || error.message}`);
-        throw error;
+        console.error('Error sending WhatsApp message:', error.response?.data || error.message);
     }
 };
 
